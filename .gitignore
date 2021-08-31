@@ -1,0 +1,7 @@
+.vs
+.code
+
+CMakeSettings.json
+
+/build
+/out
