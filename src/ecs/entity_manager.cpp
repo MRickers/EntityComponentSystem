@@ -53,6 +53,7 @@ namespace ecs {
 
 	Signature EntityManager::GetSignature(const Entity entity) {
 		checkEntityRange(entity, __LINE__);
+
 		try {
 			return signatures_.at(entity);
 		}
@@ -62,7 +63,7 @@ namespace ecs {
 				__FILE__,
 				__LINE__,
 				static_cast<int>(ERROR::ENTITY_OUT_OF_RANGE),
-				""
+				std::string("Entity: "+entity).c_str()
 			);
 		}
 	}

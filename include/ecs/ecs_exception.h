@@ -12,7 +12,10 @@ namespace ecs {
         // EntityManager -1000 - -1100
         ENTITY_MAX_COUNT=-1000,
         ENTITY_OUT_OF_RANGE = -1001,
-        ENTITY_NOT_EXISTING = -1002
+        ENTITY_NOT_EXISTING = -1002,
+
+        // ComponentArray -1101 - -1200
+        COMPONENT_INDEX_ERROR = -1101
     };
 
     class Exception : public std::exception {

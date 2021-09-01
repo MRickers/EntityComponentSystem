@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "ecs/entity_manager.h"
+#include "ecs/component_array.h"
 
 TEST(EntityManagerTest, CreateEntityTest) {
 	ecs::EntityManager entity_manager(5);
@@ -36,14 +37,59 @@ TEST(EntityManagerTest, DestroyEntity) {
 
 	const auto entity = e.CreateEntity();
 	ASSERT_EQ(entity, (uint16_t)0);
-	e.DestroyEntity(entity);
-	ASSERT_TRUE(true);
+	ASSERT_NO_THROW(e.DestroyEntity(entity));
 }
 
 TEST(EntityManagerTest, DestroyNotCreatedEntity) {
 	ecs::EntityManager e;
 	ASSERT_THROW(e.DestroyEntity(0), ecs::Exception);	
 	ASSERT_THROW(e.DestroyEntity(-1), ecs::Exception);
+}
+
+TEST(EntityManagerTest, SetSignature) {
+	ecs::EntityManager e;
+
+	const auto entity = e.CreateEntity();
+	ASSERT_NO_THROW(e.SetSignature(entity, ecs::Signature{ "001" }));
+	ASSERT_EQ(e.GetSignature(entity), ecs::Signature{ "001" });
+	ASSERT_NO_THROW(e.SetSignature(entity, ecs::Signature{ "010" }));
+	ASSERT_EQ(e.GetSignature(entity), ecs::Signature{ "010" });
+
+	ASSERT_NO_THROW(e.SetSignature(entity, ecs::Signature{ "100" }));
+	ASSERT_EQ(e.GetSignature(entity), ecs::Signature{ "100" });
+
+	ASSERT_NO_THROW(e.SetSignature(entity, ecs::Signature{ "110" }));
+	ASSERT_EQ(e.GetSignature(entity), ecs::Signature{ "110" });
+
+	ASSERT_NO_THROW(e.SetSignature(entity, ecs::Signature{ "011" }));
+	ASSERT_EQ(e.GetSignature(entity), ecs::Signature{ "011" });
+
+	ASSERT_NO_THROW(e.SetSignature(entity, ecs::Signature{ "101" }));
+	ASSERT_EQ(e.GetSignature(entity), ecs::Signature{ "101" });
+
+	ASSERT_NO_THROW(e.SetSignature(entity, ecs::Signature{ "111" }));
+	ASSERT_EQ(e.GetSignature(entity), ecs::Signature{ "111" });
+}
+
+TEST(EntityManagerTest, SetSignatureNotExist) {
+	ecs::EntityManager e;
+
+	ASSERT_THROW(e.SetSignature(0, ecs::Signature{ "000" }), ecs::Exception);
+}
+
+TEST(EntityManagerTest, GetSignatureNotExist) {
+	ecs::EntityManager e;
+
+	ASSERT_THROW(e.GetSignature(512), ecs::Exception);
+	ASSERT_THROW(e.GetSignature(-1), ecs::Exception);
+}
+
+// ComponentArray
+
+TEST(ComponentArrayTest, Insert) {
+	ecs::ComponentArray<int> components;
+	ASSERT_NO_THROW(components.Insert(0, 1));
+	
 }
 
 int main(int argc, char* argv[]) {
