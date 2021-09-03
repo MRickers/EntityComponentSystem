@@ -15,7 +15,8 @@ namespace ecs {
         ENTITY_NOT_EXISTING = -1002,
 
         // ComponentArray -1101 - -1200
-        COMPONENT_INDEX_ERROR = -1101
+        COMPONENT_INDEX_ERROR = -1101,
+        COMPONENT_MAX_COUNT = -1102
     };
 
     class Exception : public std::exception {

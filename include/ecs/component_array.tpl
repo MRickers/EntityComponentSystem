@@ -1,11 +1,22 @@
 namespace ecs {
 	template<typename T>
 	void ComponentArray<T>::Insert(const Entity entity, T component) {
-		std::size_t new_index = size_;
-		entity_to_index_[entity] = new_index;
-		index_to_entity_[new_index] = entity;
-		component_array_[new_index] = component;
-		size_++;
+		try {
+			const std::size_t new_index = size_;
+			entity_to_index_[entity] = new_index;
+			index_to_entity_[new_index] = entity;
+			//component_array_[new_index] = component;
+			component_array_.at(new_index) = component;
+			size_++;
+		} catch(const std::out_of_range& e) {
+			throw Exception(
+					e.what(),
+					__FILE__,
+					__LINE__,
+					static_cast<int>(ERROR::COMPONENT_MAX_COUNT),
+					""
+				);
+		}
 	}
 
 	template<typename T>
@@ -32,5 +43,11 @@ namespace ecs {
 				""
 			);
 		}
+	}
+
+	template<typename T>
+	T& ComponentArray<T>::Get(const Entity entity) const {
+		const auto index = entity_to_index_.at(entity);
+		return component_array_[index];
 	}
 }

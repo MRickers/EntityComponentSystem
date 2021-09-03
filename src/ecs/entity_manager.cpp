@@ -8,7 +8,7 @@ namespace ecs {
 		signatures_(),
 		entity_count_(0) {
 
-		for (Entity entity = 0; entity < (max_entity_count > MAX_ENTITIES ? MAX_ENTITIES : max_entity_count); entity++) {
+		for (Entity entity = 0; entity < (max_entity_count-1 > MAX_ENTITIES ? MAX_ENTITIES : max_entity_count); entity++) {
 			available_entities_.push(entity);
 		}
 	}

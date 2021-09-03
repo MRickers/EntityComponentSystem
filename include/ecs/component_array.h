@@ -15,8 +15,7 @@ namespace ecs {
 
 		void Insert(const Entity entity, T component);
 		void Remove(const Entity entity);
-		//T& Get(const Entity entity) const;
-		//void DestroyEntity(const Entity entity);
+		T& Get(const Entity entity) const;
 	};
 }
 

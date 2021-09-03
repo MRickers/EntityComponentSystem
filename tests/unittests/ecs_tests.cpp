@@ -88,7 +88,15 @@ TEST(EntityManagerTest, GetSignatureNotExist) {
 
 TEST(ComponentArrayTest, Insert) {
 	ecs::ComponentArray<int> components;
-	ASSERT_NO_THROW(components.Insert(0, 1));
+	ASSERT_NO_THROW(components.Insert(0, 1));	
+}
+
+TEST(ComponentArrayTest, InsertThrow) {
+	ecs::ComponentArray<int> components;
+	for (int i = 0; i < 512; i++) {
+		ASSERT_NO_THROW(components.Insert(i, 1));
+	}
+	ASSERT_THROW(components.Insert(513, 1), ecs::Exception);
 	
 }
 
