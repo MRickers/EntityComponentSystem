@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "ecs/entity_manager.h"
 #include "ecs/component_array.h"
+#include "ecs/component_manager.h"
 
 TEST(EntityManagerTest, CreateEntityTest) {
 	ecs::EntityManager entity_manager(5);
@@ -97,8 +98,148 @@ TEST(ComponentArrayTest, InsertThrow) {
 		ASSERT_NO_THROW(components.Insert(i, 1));
 	}
 	ASSERT_THROW(components.Insert(513, 1), ecs::Exception);
-	
 }
+
+
+TEST(ComponentArrayTest, Remove) {
+	ecs::ComponentArray<int> components;
+
+	ASSERT_NO_THROW(components.Insert(0, 0));
+	ASSERT_NO_THROW(components.Insert(1, 1));
+	ASSERT_NO_THROW(components.Insert(35, 35));
+	ASSERT_NO_THROW(components.Insert(44, 44));
+
+	ASSERT_NO_THROW(components.Remove(0));
+	ASSERT_NO_THROW(components.Remove(35));
+	ASSERT_NO_THROW(components.Remove(44));
+	ASSERT_NO_THROW(components.Remove(1));
+}
+
+
+TEST(ComponentArrayTest, RemoveEmptyThrow) {
+	ecs::ComponentArray<int> components;
+
+	ASSERT_THROW(components.Remove(0), ecs::Exception);
+}
+
+TEST(ComponentArrayTest, Get) {
+	ecs::ComponentArray<int> components;
+
+	ASSERT_NO_THROW(components.Insert(25, 25));
+	ASSERT_NO_THROW(components.Insert(33, 33));
+	ASSERT_NO_THROW(components.Insert(400, 400));
+	ASSERT_NO_THROW(components.Insert(8799, 8799));
+
+	ASSERT_EQ(components.Get(25), 25);
+	ASSERT_EQ(components.Get(33), 33);
+	ASSERT_EQ(components.Get(400), 400);
+	ASSERT_EQ(components.Get(8799), 8799);
+}
+
+TEST(ComponentArrayTest, GetEmptyThrow) {
+	ecs::ComponentArray<int> components;
+
+	ASSERT_THROW(components.Get(25), ecs::Exception);
+}
+
+TEST(CompontenManagerTest, RegisterComponent) {
+	ecs::ComponentManager components;
+
+	components.RegisterComponent<int>();
+}
+
+TEST(ComponentManagerTest, AddComponent) {
+	struct Vec { int x; int y; };
+
+	ecs::ComponentManager components;
+	struct Vec v{0,1};
+
+	components.RegisterComponent<Vec>();
+	ASSERT_NO_THROW(components.AddComponent<Vec>(0, v));
+}
+
+TEST(ComponentManagerTest, AddComponentNotRegistered) {
+	struct Vec { int x; int y; };
+
+	ecs::ComponentManager components;
+	struct Vec v { 0, 1 };
+
+	ASSERT_THROW(components.AddComponent<Vec>(0, v), ecs::Exception);
+}
+
+TEST(ComponentManagerTest, GetComponent) {
+	struct Vec { int x; int y; };
+
+	ecs::ComponentManager components;
+	struct Vec v { 0, 1 };
+	components.RegisterComponent<Vec>();
+	ASSERT_NO_THROW(components.AddComponent<Vec>(0, v));
+
+	const auto& c = components.GetComponent<Vec>(0);
+	ASSERT_EQ(c.x, v.x);
+	ASSERT_EQ(c.y, v.y);
+}
+
+TEST(ComponentManagerTest, GetComponentChangeValue) {
+	struct Vec { int x; int y; };
+
+	ecs::ComponentManager components;
+	struct Vec v { 0, 1 };
+	components.RegisterComponent<Vec>();
+	ASSERT_NO_THROW(components.AddComponent<Vec>(0, v));
+
+	auto& c = components.GetComponent<Vec>(0);
+	c.x = 2;
+	c.y = 2;
+
+	ASSERT_EQ(components.GetComponent<Vec>(0).x, 2);
+	ASSERT_EQ(components.GetComponent<Vec>(0).y, 2);
+}
+
+TEST(ComponentManagerTest, GetComponentMultipleEntities) {
+	struct Vec { int x; int y; };
+
+	ecs::ComponentManager components;
+	components.RegisterComponent<Vec>();
+
+	for (int i = 0; i < 512; ++i) {
+		ASSERT_NO_THROW(components.AddComponent<Vec>(i, { i,i }));
+	}
+
+	for (int i = 0; i < 512; ++i) {
+		ASSERT_EQ(components.GetComponent<Vec>(i).x, i);
+		ASSERT_EQ(components.GetComponent<Vec>(i).y, i);
+	}
+}
+
+TEST(ComponentManagerTest, GetComponentMultipleComponents) {
+	struct Vec { int x; int y; };
+	struct Property { float version=0; std::string name=""; };
+	struct Test { uint16_t t1=0; int32_t t2=0; std::string t3=""; };
+
+	ecs::ComponentManager components;
+	components.RegisterComponent<Vec>();
+	components.RegisterComponent<Property>();
+	components.RegisterComponent<Test>();
+
+	for (int i = 0; i < 512; ++i) {
+		ASSERT_NO_THROW(components.AddComponent<Vec>(i, { i,i }));
+		Property prop{ i,"name" };
+		ASSERT_NO_THROW(components.AddComponent<Property>(i, prop));
+		Test testo{ i + 1, i + 2, "hello" };
+		ASSERT_NO_THROW(components.AddComponent<Test>(i, testo));
+	}
+
+	for (int i = 0; i < 512; ++i) {
+		ASSERT_EQ(components.GetComponent<Vec>(i).x, i);
+		ASSERT_EQ(components.GetComponent<Vec>(i).y, i);
+		ASSERT_EQ(components.GetComponent<Property>(i).version, i);
+		ASSERT_EQ(components.GetComponent<Property>(i).name, "name");
+		ASSERT_EQ(components.GetComponent<Test>(i).t1, i+1);
+		ASSERT_EQ(components.GetComponent<Test>(i).t2, i + 2);
+	}
+}
+
 
 int main(int argc, char* argv[]) {
 	testing::InitGoogleTest(&argc, argv);

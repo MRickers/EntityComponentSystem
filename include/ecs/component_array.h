@@ -3,8 +3,14 @@
 #include <unordered_map>
 
 namespace ecs {
+
+	class IComponentArray {
+	public:
+		virtual ~IComponentArray() = default;
+	};
+
 	template<typename T>
-	class ComponentArray {
+	class ComponentArray : public IComponentArray{
 	private:
 		std::array<T, MAX_ENTITIES> component_array_;
 		std::unordered_map<Entity, std::size_t> entity_to_index_;
@@ -15,7 +21,7 @@ namespace ecs {
 
 		void Insert(const Entity entity, T component);
 		void Remove(const Entity entity);
-		T& Get(const Entity entity) const;
+		T& Get(const Entity entity);
 	};
 }
 

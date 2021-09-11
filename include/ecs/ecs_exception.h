@@ -16,7 +16,8 @@ namespace ecs {
 
         // ComponentArray -1101 - -1200
         COMPONENT_INDEX_ERROR = -1101,
-        COMPONENT_MAX_COUNT = -1102
+        COMPONENT_MAX_COUNT = -1102,
+        COMPONENT_TYPE_NOT_FOUND = -1103
     };
 
     class Exception : public std::exception {
