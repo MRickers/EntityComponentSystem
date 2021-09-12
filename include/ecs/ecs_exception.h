@@ -17,7 +17,13 @@ namespace ecs {
         // ComponentArray -1101 - -1200
         COMPONENT_INDEX_ERROR = -1101,
         COMPONENT_MAX_COUNT = -1102,
-        COMPONENT_TYPE_NOT_FOUND = -1103
+        COMPONENT_TYPE_NOT_FOUND = -1103,
+
+        // SystemManager -1201 - -1300
+        SYSTEM_OUT_OF_MEMORY = -1201,
+        SYSTEM_ALREADY_REGISTERED = -1202,
+        SYSTEM_SIGNATURE_ALREADY_REGISTERED = -1203,
+        SYSTEM_SIGNATURE_NOT_FOUND = -1204
     };
 
     class Exception : public std::exception {

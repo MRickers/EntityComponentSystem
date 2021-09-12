@@ -44,5 +44,13 @@ namespace ecs {
 		T& GetComponent(const Entity entity) {
 			return getComponent<T>()->Get(entity);
 		}
+
+		void DestroyEntity(const Entity entity) {
+			for (const auto& components : components_) {
+				const auto& component = components.second;
+
+				component->DestroyEntity(entity);
+			}
+		}
 	};
 }

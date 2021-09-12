@@ -2,6 +2,7 @@
 #include "ecs/entity_manager.h"
 #include "ecs/component_array.h"
 #include "ecs/component_manager.h"
+#include "ecs/system_manager.h"
 
 TEST(EntityManagerTest, CreateEntityTest) {
 	ecs::EntityManager entity_manager(5);
@@ -109,17 +110,22 @@ TEST(ComponentArrayTest, Remove) {
 	ASSERT_NO_THROW(components.Insert(35, 35));
 	ASSERT_NO_THROW(components.Insert(44, 44));
 
-	ASSERT_NO_THROW(components.Remove(0));
-	ASSERT_NO_THROW(components.Remove(35));
-	ASSERT_NO_THROW(components.Remove(44));
-	ASSERT_NO_THROW(components.Remove(1));
+	ASSERT_NO_THROW(components.DestroyEntity(0));
+	ASSERT_NO_THROW(components.DestroyEntity(35));
+	ASSERT_NO_THROW(components.DestroyEntity(44));
+	ASSERT_NO_THROW(components.DestroyEntity(1));
+
+	ASSERT_THROW(components.Get(0), ecs::Exception);
+	ASSERT_THROW(components.Get(35), ecs::Exception);
+	ASSERT_THROW(components.Get(44), ecs::Exception);
+	ASSERT_THROW(components.Get(1), ecs::Exception);
 }
 
 
 TEST(ComponentArrayTest, RemoveEmptyThrow) {
 	ecs::ComponentArray<int> components;
 
-	ASSERT_THROW(components.Remove(0), ecs::Exception);
+	ASSERT_THROW(components.DestroyEntity(0), ecs::Exception);
 }
 
 TEST(ComponentArrayTest, Get) {
@@ -238,6 +244,58 @@ TEST(ComponentManagerTest, GetComponentMultipleComponents) {
 		ASSERT_EQ(components.GetComponent<Test>(i).t1, i+1);
 		ASSERT_EQ(components.GetComponent<Test>(i).t2, i + 2);
 	}
+}
+
+TEST(SystemManagerTest, RegisterSystem) {
+	struct TestSystem : public ecs::System {};
+
+	ecs::SystemManager systems;
+	ASSERT_NO_THROW(systems.RegisterSystem<TestSystem>());
+}
+
+TEST(SystemManagerTest, RegisterSystemDouble) {
+	struct TestSystem : public ecs::System {};
+
+	ecs::SystemManager systems;
+	ASSERT_NO_THROW(systems.RegisterSystem<TestSystem>());
+	ASSERT_THROW(systems.RegisterSystem<TestSystem>(), ecs::Exception);
+}
+
+TEST(SystemManagerTest, SetSignature) {
+	struct TestSystem : public ecs::System {};
+
+	ecs::SystemManager systems;
+	ASSERT_NO_THROW(systems.RegisterSystem<TestSystem>());
+	ASSERT_NO_THROW(systems.SetSignature<TestSystem>(ecs::Signature{ "001" }));
+}
+
+TEST(SystemManagerTest, SetSignatureDouble) {
+	struct TestSystem : public ecs::System {};
+
+	ecs::SystemManager systems;
+	ASSERT_NO_THROW(systems.RegisterSystem<TestSystem>());
+	ASSERT_NO_THROW(systems.SetSignature<TestSystem>(ecs::Signature{ "001" }));
+	ASSERT_THROW(systems.SetSignature<TestSystem>(ecs::Signature("010")), ecs::Exception);
+}
+
+TEST(SystemManagerTest, SetEntitySignature) {
+	struct TestSystem : public ecs::System {};
+
+	ecs::SystemManager systems;
+	ASSERT_NO_THROW(systems.RegisterSystem<TestSystem>());
+	ASSERT_NO_THROW(systems.SetSignature<TestSystem>(ecs::Signature("001")));
+	ASSERT_NO_THROW(systems.SetEntitySignature(0, ecs::Signature("001")));
+	ASSERT_NO_THROW(systems.SetEntitySignature(0, ecs::Signature("010")));
+}
+
+TEST(SystemManagerTest, DestroyEntity) {
+	struct TestSystem : public ecs::System {};
+
+	ecs::SystemManager systems;
+	ASSERT_NO_THROW(systems.RegisterSystem<TestSystem>());
+	ASSERT_NO_THROW(systems.SetSignature<TestSystem>(ecs::Signature("001")));
+	ASSERT_NO_THROW(systems.SetEntitySignature(0, ecs::Signature("001")));
+	ASSERT_NO_THROW(systems.DestroyEntity(0));
 }
 
 

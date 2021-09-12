@@ -7,6 +7,7 @@ namespace ecs {
 	class IComponentArray {
 	public:
 		virtual ~IComponentArray() = default;
+		virtual void DestroyEntity(const Entity entity) = 0;
 	};
 
 	template<typename T>
@@ -16,12 +17,15 @@ namespace ecs {
 		std::unordered_map<Entity, std::size_t> entity_to_index_;
 		std::unordered_map<std::size_t, Entity> index_to_entity_;
 		std::size_t size_;
+
+		void remove(const Entity entity);
 	public:
 		ComponentArray() : component_array_(), entity_to_index_(), index_to_entity_(), size_(0) {}
 
 		void Insert(const Entity entity, T component);
-		void Remove(const Entity entity);
 		T& Get(const Entity entity);
+
+		void DestroyEntity(const Entity entity) override;
 	};
 }
 

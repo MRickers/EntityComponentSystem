@@ -19,7 +19,7 @@ namespace ecs {
 	}
 
 	template<typename T>
-	void ComponentArray<T>::Remove(const Entity entity) {
+	void ComponentArray<T>::remove(const Entity entity) {
 		try {
 			std::size_t index_of_removed_entity = entity_to_index_.at(entity);
 			std::size_t index_of_last_entity = size_ - 1;
@@ -59,5 +59,10 @@ namespace ecs {
 				""
 			);
 		}
+	}
+
+	template<typename T>
+	void ComponentArray<T>::DestroyEntity(const Entity entity) {
+		remove(entity);
 	}
 }
