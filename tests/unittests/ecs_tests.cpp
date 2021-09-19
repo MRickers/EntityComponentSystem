@@ -3,6 +3,7 @@
 #include "ecs/component_array.h"
 #include "ecs/component_manager.h"
 #include "ecs/system_manager.h"
+#include "ecs/entitiy_component_system.h"
 
 TEST(EntityManagerTest, CreateEntityTest) {
 	ecs::EntityManager entity_manager(5);
@@ -101,8 +102,32 @@ TEST(ComponentArrayTest, InsertThrow) {
 	ASSERT_THROW(components.Insert(513, 1), ecs::Exception);
 }
 
-
 TEST(ComponentArrayTest, Remove) {
+	ecs::ComponentArray<int> components;
+
+	ASSERT_NO_THROW(components.Insert(0, 0));
+	ASSERT_NO_THROW(components.Insert(1, 1));
+	ASSERT_NO_THROW(components.Insert(35, 35));
+	ASSERT_NO_THROW(components.Insert(44, 44));
+
+	ASSERT_NO_THROW(components.Remove(0));
+	ASSERT_NO_THROW(components.Remove(35));
+	ASSERT_NO_THROW(components.Remove(44));
+	ASSERT_NO_THROW(components.Remove(1));
+
+	ASSERT_THROW(components.Get(0), ecs::Exception);
+	ASSERT_THROW(components.Get(35), ecs::Exception);
+	ASSERT_THROW(components.Get(44), ecs::Exception);
+	ASSERT_THROW(components.Get(1), ecs::Exception);
+}
+
+TEST(ComponentArrayTest, RemoveEmptyThrow) {
+	ecs::ComponentArray<int> components;
+
+	ASSERT_THROW(components.Remove(0), ecs::Exception);
+}
+
+TEST(ComponentArrayTest, Destroy) {
 	ecs::ComponentArray<int> components;
 
 	ASSERT_NO_THROW(components.Insert(0, 0));
@@ -122,7 +147,7 @@ TEST(ComponentArrayTest, Remove) {
 }
 
 
-TEST(ComponentArrayTest, RemoveEmptyThrow) {
+TEST(ComponentArrayTest, DestroyEmptyThrow) {
 	ecs::ComponentArray<int> components;
 
 	ASSERT_THROW(components.DestroyEntity(0), ecs::Exception);
@@ -171,6 +196,28 @@ TEST(ComponentManagerTest, AddComponentNotRegistered) {
 	struct Vec v { 0, 1 };
 
 	ASSERT_THROW(components.AddComponent<Vec>(0, v), ecs::Exception);
+}
+
+TEST(ComponentManagerTest, RemoveComponent) {
+	struct Vec { int x; int y; };
+
+	ecs::ComponentManager components;
+	struct Vec v { 0, 1 };
+
+	components.RegisterComponent<Vec>();
+	ASSERT_NO_THROW(components.AddComponent<Vec>(0, v));
+	ASSERT_NO_THROW(components.RemoveComponent<Vec>(0));
+	ASSERT_THROW(components.GetComponent<Vec>(0), ecs::Exception);
+}
+
+TEST(ComponentManagerTest, RemoveComponentNotAdded) {
+	struct Vec { int x; int y; };
+
+	ecs::ComponentManager components;
+	struct Vec v { 0, 1 };
+
+	components.RegisterComponent<Vec>();
+	ASSERT_THROW(components.RemoveComponent<Vec>(0), ecs::Exception);
 }
 
 TEST(ComponentManagerTest, GetComponent) {
@@ -246,6 +293,33 @@ TEST(ComponentManagerTest, GetComponentMultipleComponents) {
 	}
 }
 
+TEST(ComponentManagerTest, GetComponentType) {
+	struct Vec { int x; int y; };
+	struct Property { float version = 0; std::string name = ""; };
+
+	ecs::ComponentManager components;
+	components.RegisterComponent<Vec>();
+	components.RegisterComponent<Property>();
+
+	ASSERT_EQ(components.GetComponentType<Vec>(), 0);
+	ASSERT_EQ(components.GetComponentType<Property>(), 1);
+}
+
+TEST(ComponentManagerTest, GetComponentTypeEmpty) {
+	struct Vec { int x; int y; };
+	ecs::ComponentManager components;
+
+	ASSERT_THROW(components.GetComponentType<Vec>(), ecs::Exception);
+}
+
+TEST(ComponentManagerTest, GetComponentTypeNotRegistered) {
+	struct Vec { int x; int y; };
+	struct Property { float version = 0; std::string name = ""; };
+	ecs::ComponentManager components;
+
+	ASSERT_THROW(components.GetComponentType<Property>(), ecs::Exception);
+}
+
 TEST(SystemManagerTest, RegisterSystem) {
 	struct TestSystem : public ecs::System {};
 
@@ -298,6 +372,9 @@ TEST(SystemManagerTest, DestroyEntity) {
 	ASSERT_NO_THROW(systems.DestroyEntity(0));
 }
 
+TEST(EntityComponentSystem, Create) {
+	ecs::EntityComponentSystem ECS;
+}
 
 int main(int argc, char* argv[]) {
 	testing::InitGoogleTest(&argc, argv);

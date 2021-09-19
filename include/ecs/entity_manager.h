@@ -7,7 +7,7 @@
 
 namespace ecs {
 	inline const std::uint16_t MAX_ENTITIES = 512;
-	inline const std::uint16_t MAX_COMPONENTS = 3;
+	inline const std::uint16_t MAX_COMPONENTS = 32;
 
 	using Entity = std::uint16_t;
 	using Signature = std::bitset<MAX_COMPONENTS>;

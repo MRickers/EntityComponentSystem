@@ -24,7 +24,7 @@ namespace ecs {
 
 		void Insert(const Entity entity, T component);
 		T& Get(const Entity entity);
-
+		void Remove(const Entity entity);
 		void DestroyEntity(const Entity entity) override;
 	};
 }

@@ -18,6 +18,7 @@ namespace ecs {
         COMPONENT_INDEX_ERROR = -1101,
         COMPONENT_MAX_COUNT = -1102,
         COMPONENT_TYPE_NOT_FOUND = -1103,
+        COMPONENT_TYPE_ALREADY_REGISTERED = -1104,
 
         // SystemManager -1201 - -1300
         SYSTEM_OUT_OF_MEMORY = -1201,

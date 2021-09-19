@@ -62,6 +62,11 @@ namespace ecs {
 	}
 
 	template<typename T>
+	void ComponentArray<T>::Remove(const Entity entity) {
+		remove(entity);
+	}
+
+	template<typename T>
 	void ComponentArray<T>::DestroyEntity(const Entity entity) {
 		remove(entity);
 	}
