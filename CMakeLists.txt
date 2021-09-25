@@ -20,5 +20,9 @@ endif()
 
 add_compile_options(${COMPILE_OPTIONS})
 
+add_library(ecslib SHARED ${PROJECT_SOURCE_DIR}/src/ecs/entity_manager.cpp)
+target_include_directories(ecslib PRIVATE ${PROJECT_SOURCE_DIR}/include)
+install(TARGETS ecslib DESTINATION bin)
+
 add_subdirectory(googletest)
 add_subdirectory(tests)
