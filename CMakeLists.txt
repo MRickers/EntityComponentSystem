@@ -20,7 +20,7 @@ endif()
 
 add_compile_options(${COMPILE_OPTIONS})
 
-add_library(ecslib SHARED ${PROJECT_SOURCE_DIR}/src/ecs/entity_manager.cpp)
+add_library(ecslib SHARED "src/ecs/core/entity_manager.cpp" "include/ecs/systems/render_system.h")
 target_include_directories(ecslib PRIVATE ${PROJECT_SOURCE_DIR}/include)
 install(TARGETS ecslib DESTINATION bin)
 
