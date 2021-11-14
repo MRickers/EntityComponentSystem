@@ -6,6 +6,8 @@
 #include "ecs/core/entity_component_system.h"
 #include "logging/logging.h"
 
+#include "ecs/event/event.h"
+
 TEST(EntityManagerTest, CreateEntityTest) {
 	ecs::core::EntityManager entity_manager(5);
 
@@ -380,6 +382,28 @@ TEST(EntityComponentSystem, Create) {
 TEST(Logging, ConsoleLogTest) {
 	lLog(lDebug) << "ConsoleTest" << " abcdefg " << 5 * 5;
 	lLog(lDebug) << "Hello " << " there " << "!";
+}
+
+TEST(EventHandler, Test) {
+	struct TestEvent : public ecs::event::IEvent {
+	public:
+		TestEvent(int x, int y) : x_(x), y_(y) {}
+		int x_; int y_;
+	};
+
+	class TestSystem : public ecs::core::System {
+	public:
+		TestSystem() = default;
+		~TestSystem() = default;
+
+		void testCallback(std::unique_ptr<TestEvent>& test) {
+			test->x_ += 1;
+			test->y_ += 1;
+		}
+	};
+	auto h = std::make_unique<TestSystem>();
+
+	ecs::event::MemberFunctionHandler handler {std::move(h), std::bind(&TestSystem::testCallback)};
 }
 
 int main(int argc, char* argv[]) {
