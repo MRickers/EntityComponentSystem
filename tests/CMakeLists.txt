@@ -1,9 +1,9 @@
-option(build_ecs_tests ON)
+option(build_ecs_tests "" ON)
 
 include(CTest)
 
 if(build_ecs_tests )
-message("-- building ecs tests")
+message(STATUS "Building ecs tests")
 add_executable(ecs_tests unittests/ecs_tests.cpp)
 target_include_directories(ecs_tests PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/logging ${CMAKE_SOURCE_DIR}googletest/googletest/include)
 target_link_libraries(ecs_tests PRIVATE GTest::gtest GTest::gtest_main ecslib)
