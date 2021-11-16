@@ -396,14 +396,15 @@ TEST(EventHandler, Test) {
 		TestSystem() = default;
 		~TestSystem() = default;
 
-		void testCallback(std::unique_ptr<TestEvent>& test) {
+		void testCallback(const std::unique_ptr<TestEvent>& test) {
 			test->x_ += 1;
 			test->y_ += 1;
+			lLog(lDebug) << "x=" << test->x_ << "y=" << test->y_;
 		}
 	};
-	auto h = std::make_unique<TestSystem>();
 
-	ecs::event::MemberFunctionHandler handler {std::move(h), std::bind(&TestSystem::testCallback)};
+	ecs::event::MemberFunctionHandler handler {std::move(std::make_unique<TestSystem>()), &TestSystem::testCallback};
+	handler.Exec(std::move(std::make_unique<TestEvent>(1, 2)));
 }
 
 int main(int argc, char* argv[]) {
