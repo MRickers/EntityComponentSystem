@@ -403,8 +403,8 @@ TEST(EventHandler, Test) {
 		}
 	};
 
-	ecs::event::MemberFunctionHandler handler {std::move(std::make_unique<TestSystem>()), &TestSystem::testCallback};
-	handler.Exec(std::move(std::make_unique<TestEvent>(1, 2)));
+	ecs::event::MemberFunctionHandler handler {std::make_unique<TestSystem>(), &TestSystem::testCallback};
+	handler.Exec(std::make_unique<TestEvent>(1, 2));
 }
 
 int main(int argc, char* argv[]) {
