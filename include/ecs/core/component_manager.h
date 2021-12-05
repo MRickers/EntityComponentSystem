@@ -34,7 +34,7 @@ namespace ecs {
 		public:
 		
 			template<typename T>
-			void RegisterComponent() noexcept {
+			void RegisterComponent() {
 				const auto type_name = typeid(T).name();
 
 				if (component_types_.find(type_name) != component_types_.end()) {

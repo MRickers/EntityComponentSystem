@@ -7,6 +7,7 @@
 #include "logging/logging.h"
 
 #include "ecs/event/event.h"
+#include "ecs/event/event_handler.h"
 
 TEST(EntityManagerTest, CreateEntityTest) {
 	ecs::core::EntityManager entity_manager(5);
@@ -384,7 +385,7 @@ TEST(Logging, ConsoleLogTest) {
 	lLog(lDebug) << "Hello " << " there " << "!";
 }
 
-TEST(EventHandler, Test) {
+TEST(MemberFunctionHandler, InvokeCallback) {
 	struct TestEvent : public ecs::event::IEvent {
 	public:
 		TestEvent(int x, int y) : x_(x), y_(y) {}
@@ -396,16 +397,44 @@ TEST(EventHandler, Test) {
 		TestSystem() = default;
 		~TestSystem() = default;
 
-		void testCallback(const std::unique_ptr<TestEvent>& test) {
+		void testCallback(const std::shared_ptr<TestEvent> test) {
 			test->x_ += 1;
 			test->y_ += 1;
-			lLog(lDebug) << "x=" << test->x_ << "y=" << test->y_;
 		}
 	};
 
-	ecs::event::MemberFunctionHandler handler {std::make_unique<TestSystem>(), &TestSystem::testCallback};
-	handler.Exec(std::make_unique<TestEvent>(1, 2));
+	ecs::event::MemberFunctionHandler handler {std::make_unique<TestSystem>(), & TestSystem::testCallback};
+	
+	ASSERT_NO_THROW(handler.Exec(std::make_shared<TestEvent>(1, 2)));
 }
+
+TEST(EventHandler, InvokeCallback) {
+	struct TestEvent : public ecs::event::IEvent {
+	public:
+		TestEvent(int x, int y) : x_(x), y_(y) {}
+		int x_; int y_;
+	};
+
+	class TestSystem : public ecs::core::System {
+	public:
+		TestSystem() = default;
+		~TestSystem() = default;
+
+		void testCallback(const std::shared_ptr<TestEvent> test) {
+			test->x_ += 1;
+			test->y_ += 1;
+		}
+	};
+	
+	ecs::event::EventHandler event_handler;
+
+	ASSERT_NO_THROW(event_handler.Subscribe(std::make_unique<TestSystem>(), &TestSystem::testCallback));
+	auto testo = std::make_shared<TestEvent>(1, 1);
+	ASSERT_NO_THROW(event_handler.Publish(testo));
+	ASSERT_EQ(testo->x_, 2);
+	ASSERT_EQ(testo->y_, 2);
+}
+
 
 int main(int argc, char* argv[]) {
 	testing::InitGoogleTest(&argc, argv);
