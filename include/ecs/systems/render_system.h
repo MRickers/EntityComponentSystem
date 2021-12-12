@@ -11,7 +11,7 @@ namespace ecs {
 		public:
 			virtual ~RenderSystem() {}
 			virtual void Update(uint32_t dt) = 0;
-
+			virtual void Render() = 0;
 			virtual void Init() {}
 		};
 

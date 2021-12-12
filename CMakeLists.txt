@@ -21,7 +21,7 @@ endif()
 add_compile_options(${COMPILE_OPTIONS})
 
 
-add_library(ecslib SHARED "src/ecs/core/entity_manager.cpp" "include/ecs/systems/render_system.h" "include/ecs/event/event.h" "include/ecs/event/event_handler.h")
+add_library(ecslib SHARED "src/ecs/core/entity_manager.cpp" "include/ecs/systems/render_system.h" "include/ecs/event/event.h" "include/ecs/event/event_handler.h" "include/ecs/event/event_new.h")
 target_include_directories(ecslib PRIVATE ${PROJECT_SOURCE_DIR}/include)
 install(TARGETS ecslib DESTINATION bin)
 

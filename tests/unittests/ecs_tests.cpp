@@ -6,8 +6,10 @@
 #include "ecs/core/entity_component_system.h"
 #include "logging/logging.h"
 
-#include "ecs/event/event.h"
+/*#include "ecs/event/event.h"
 #include "ecs/event/event_handler.h"
+*/
+#include "ecs/event/event_new.h"
 
 TEST(EntityManagerTest, CreateEntityTest) {
 	ecs::core::EntityManager entity_manager(5);
@@ -384,7 +386,7 @@ TEST(Logging, ConsoleLogTest) {
 	lLog(lDebug) << "ConsoleTest" << " abcdefg " << 5 * 5;
 	lLog(lDebug) << "Hello " << " there " << "!";
 }
-
+/*
 TEST(MemberFunctionHandler, InvokeCallback) {
 	struct TestEvent : public ecs::event::IEvent {
 	public:
@@ -429,10 +431,38 @@ TEST(EventHandler, InvokeCallback) {
 	ecs::event::EventHandler event_handler;
 
 	ASSERT_NO_THROW(event_handler.Subscribe(std::make_unique<TestSystem>(), &TestSystem::testCallback));
-	auto testo = std::make_shared<TestEvent>(1, 1);
+	const auto testo = std::make_shared<TestEvent>(1, 1);
 	ASSERT_NO_THROW(event_handler.Publish(testo));
 	ASSERT_EQ(testo->x_, 2);
 	ASSERT_EQ(testo->y_, 2);
+} */
+
+TEST(EventHandler, Subscribe) {
+	struct TestEvent {
+	public:
+		TestEvent(int x, int y) : x_(x), y_(y) {}
+		int x_; int y_;
+	};
+
+	class TestSystem : public ecs::core::System {
+	public:
+		TestSystem() = default;
+		~TestSystem() = default;
+
+		void testCallback(const ecs::event::Event& test) {
+			auto data = test.GetData<TestEvent>();
+			data.x_ += 1;
+			data.y_ += 1;
+		}
+	};
+
+	ecs::event::EventHandler event_handler;
+	ASSERT_NO_THROW(event_handler.Subscribe(0, std::bind(&TestSystem::testCallback, std::make_shared<TestSystem>(), std::placeholders::_1)));
+	ecs::event::Event test_event {TestEvent{1, 1}, 0};
+	ASSERT_NO_THROW(event_handler.Publish(test_event));
+	const auto data = test_event.GetData<TestEvent>();
+	ASSERT_EQ(data.x_, 2);
+	ASSERT_EQ(data.y_, 2);
 }
 
 
