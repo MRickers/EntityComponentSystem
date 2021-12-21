@@ -21,12 +21,48 @@ endif()
 add_compile_options(${COMPILE_OPTIONS})
 
 
-add_library(ecslib SHARED "src/ecs/core/entity_manager.cpp" "include/ecs/systems/render_system.h" "include/ecs/event/event.h" "include/ecs/event/event_handler.h" "include/ecs/event/event_new.h")
+add_library(ecslib SHARED src/ecs/core/entity_manager.cpp)
 target_include_directories(ecslib PRIVATE ${PROJECT_SOURCE_DIR}/include)
 install(TARGETS ecslib DESTINATION bin)
 
 add_subdirectory(Vector)
 
-set(gtest_force_shared_crt=On)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 add_subdirectory(googletest)
 add_subdirectory(tests)
+
+option(BACKEND_SFML "" ON)
+
+if(BACKEND_SFML)
+message(STATUS "building with backend SFML")
+add_library(audiolib SHARED IMPORTED)
+set_property(TARGET audiolib PROPERTY
+             IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1/bin/sfml-audio-2.dll)
+set_property(TARGET audiolib PROPERTY
+             IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1/lib/sfml-audio.lib)
+#
+#add_library(graphics SHARED IMPORTED)
+#set_property(TARGET graphics PROPERTY
+#             IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1/bin/sfml-graphics-2.dll)
+#set_property(TARGET graphics PROPERTY
+#             IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1/lib/sfml-graphics.lib)
+
+#add_library(network SHARED IMPORTED)
+#set_property(TARGET network PROPERTY
+#             IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1/bin/sfml-network-2.dll)
+#set_property(TARGET network PROPERTY
+#             IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1/lib/sfml-network.lib)
+
+#add_library(system SHARED IMPORTED)
+#set_property(TARGET system PROPERTY
+#             IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1/bin/sfml-system-2.dll)
+#set_property(TARGET system PROPERTY
+#             IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1/lib/sfml-system.lib)
+
+#add_library(window SHARED IMPORTED)
+#set_property(TARGET window PROPERTY
+#             IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1/bin/sfml-window-2.dll)
+#set_property(TARGET window PROPERTY
+#             IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1/lib/sfml-window.lib)
+endif()
+

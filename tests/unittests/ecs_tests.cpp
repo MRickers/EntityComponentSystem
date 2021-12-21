@@ -5,11 +5,7 @@
 #include "ecs/core/system_manager.h"
 #include "ecs/core/entity_component_system.h"
 #include "logging/logging.h"
-
-/*#include "ecs/event/event.h"
-#include "ecs/event/event_handler.h"
-*/
-#include "ecs/event/event_new.h"
+#include "ecs/event/event.h"
 
 TEST(EntityManagerTest, CreateEntityTest) {
 	ecs::core::EntityManager entity_manager(5);
@@ -386,56 +382,6 @@ TEST(Logging, ConsoleLogTest) {
 	lLog(lDebug) << "ConsoleTest" << " abcdefg " << 5 * 5;
 	lLog(lDebug) << "Hello " << " there " << "!";
 }
-/*
-TEST(MemberFunctionHandler, InvokeCallback) {
-	struct TestEvent : public ecs::event::IEvent {
-	public:
-		TestEvent(int x, int y) : x_(x), y_(y) {}
-		int x_; int y_;
-	};
-
-	class TestSystem : public ecs::core::System {
-	public:
-		TestSystem() = default;
-		~TestSystem() = default;
-
-		void testCallback(const std::shared_ptr<TestEvent> test) {
-			test->x_ += 1;
-			test->y_ += 1;
-		}
-	};
-
-	ecs::event::MemberFunctionHandler handler {std::make_unique<TestSystem>(), & TestSystem::testCallback};
-	
-	ASSERT_NO_THROW(handler.Exec(std::make_shared<TestEvent>(1, 2)));
-}
-
-TEST(EventHandler, InvokeCallback) {
-	struct TestEvent : public ecs::event::IEvent {
-	public:
-		TestEvent(int x, int y) : x_(x), y_(y) {}
-		int x_; int y_;
-	};
-
-	class TestSystem : public ecs::core::System {
-	public:
-		TestSystem() = default;
-		~TestSystem() = default;
-
-		void testCallback(const std::shared_ptr<TestEvent> test) {
-			test->x_ += 1;
-			test->y_ += 1;
-		}
-	};
-	
-	ecs::event::EventHandler event_handler;
-
-	ASSERT_NO_THROW(event_handler.Subscribe(std::make_unique<TestSystem>(), &TestSystem::testCallback));
-	const auto testo = std::make_shared<TestEvent>(1, 1);
-	ASSERT_NO_THROW(event_handler.Publish(testo));
-	ASSERT_EQ(testo->x_, 2);
-	ASSERT_EQ(testo->y_, 2);
-} */
 
 TEST(EventHandler, Subscribe) {
 	struct TestEvent {
@@ -449,10 +395,11 @@ TEST(EventHandler, Subscribe) {
 		TestSystem() = default;
 		~TestSystem() = default;
 
-		void testCallback(const ecs::event::Event& test) {
+		void testCallback(ecs::event::Event& test) {
 			auto data = test.GetData<TestEvent>();
 			data.x_ += 1;
 			data.y_ += 1;
+			test.SetData<TestEvent>(data);
 		}
 	};
 

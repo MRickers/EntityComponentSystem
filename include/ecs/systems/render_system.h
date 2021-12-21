@@ -5,6 +5,15 @@
 
 namespace ecs {
 	namespace system {
+		class RenderWindow {
+		public:
+
+		};
+
+		class RenderWindowFactory {
+
+		};
+
 		class RenderSystem : public ecs::core::System {
 		private:
 

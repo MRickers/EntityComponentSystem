@@ -1,36 +1,70 @@
-#pragma once
-#include <memory>
+#include <unordered_map>
+#include <vector>
 #include <functional>
+#include <memory>
+#include <typeindex>
+#include <any>
+#include <optional>
 
 namespace ecs::event {
-	// data
-	class IEvent {
-	public:
-		virtual ~IEvent() {}
-	};
+	using EventId = std::uint32_t;
 
-	// logic
-	class IHandlerFunction {
-	public:
-		virtual ~IHandlerFunction() {}
-		virtual void Exec(const std::shared_ptr<IEvent> evnt) = 0;
-	};
-
-	template<typename Instance, typename EventType>
-	class MemberFunctionHandler : public IHandlerFunction {
+	class Event {
 	private:
-		typedef void (Instance::*callback)(const std::shared_ptr<EventType>);
-		std::unique_ptr<Instance> instance_;
-		callback callback_;
+		std::any data_;
+		EventId id_;
 	public:
-		MemberFunctionHandler(std::unique_ptr<Instance> instance, callback handler_function) :
-			instance_{ std::move(instance) },
-			callback_{ handler_function }
-		{}
+		Event() = delete;
 
-		void Exec(const std::shared_ptr<IEvent> evnt) override {
-			const auto casted_ptr = std::static_pointer_cast<EventType>(evnt);
-			((instance_.get())->*callback_)(casted_ptr);
+		Event(EventId id) : data_(), id_(id) {}
+
+		template<typename T>
+		Event(const T& data, EventId id) : data_(data), id_(id){}
+
+		template<typename T>
+		T GetData() const {
+			return std::any_cast<T>(data_);
+		}
+
+		template<typename T>
+		void SetData(const T& data) {
+			data_ = data;
+		}
+
+		EventId GetId() const {
+			return id_;
+		}
+	};
+
+	class EventHandler {
+		typedef std::vector<std::function<void(Event&)>> handlerArray;
+	private:
+		std::unordered_map<EventId, handlerArray> listeners_;
+	public:
+		
+		void Subscribe(EventId id, std::function<void(Event&)> callback) {
+			if (auto listener = listeners_.find(id); listener == listeners_.end()) {
+				handlerArray handler;
+				handler.push_back(callback);
+				listeners_[id] = handler;
+			}
+			else {
+				listener->second.push_back(callback);
+			} 
+		}
+
+		void Publish(Event& evnt) {
+			const auto id = evnt.GetId();
+
+			for (const auto& listener : listeners_.at(id)) {
+				listener(evnt);
+			}
+		}
+
+		void Publish(EventId id) {
+			Event evnt{ id };
+
+			Publish(evnt);
 		}
 	};
 }
