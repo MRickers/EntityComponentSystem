@@ -2,7 +2,7 @@ option(BUILD_EXAMPLES "" ON)
 
 if(BUILD_EXAMPLES)
 	message(STATUS "Building examples")
-
+	message(STATUS "Building sfml example")
 	add_executable(short_example examples/short_example.cpp)
 	target_include_directories(
 		short_example PRIVATE 
@@ -14,4 +14,14 @@ if(BUILD_EXAMPLES)
 	  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:short_example> $<TARGET_FILE_DIR:short_example>
 	  COMMAND_EXPAND_LISTS
 	  )
+
+	find_package(Threads)
+	message(STATUS "Building timer example")
+	add_executable(timer_example examples/timer_example.cpp)
+	target_include_directories(
+		timer_example PRIVATE
+		${CMAKE_SOURCE_DIR}/include
+	)
+	target_link_libraries(timer_example ecslib Threads::Threads)
+	install(TARGETS timer_example DESTINATION bin)
 endif()

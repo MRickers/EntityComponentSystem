@@ -20,7 +20,7 @@ endif()
 
 add_compile_options(${COMPILE_OPTIONS})
 
-add_library(ecslib SHARED src/ecs/core/entity_manager.cpp "include/ecs/systems/render_sfml.h")
+add_library(ecslib SHARED src/ecs/core/entity_manager.cpp src/ecs/utils/timer.cpp)
 target_include_directories(ecslib PRIVATE ${PROJECT_SOURCE_DIR}/include)
 install(TARGETS ecslib DESTINATION bin)
 
