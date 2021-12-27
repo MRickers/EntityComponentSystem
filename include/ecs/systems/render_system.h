@@ -1,37 +1,10 @@
 #pragma once
 #include <memory>
+#include <ecs/systems/render_system_interface.h>
+#include <ecs/core/entity_component_system.h>
 
-#include "ecs/core/system_manager.h"
-
-namespace ecs {
-	namespace system {
-		class RenderWindow {
-		public:
-
-		};
-
-		class RenderWindowFactory {
-
-		};
-
-		class RenderSystem : public ecs::core::System {
-		private:
-
-		public:
-			virtual ~RenderSystem() {}
-			virtual void Update(uint32_t dt) = 0;
-			virtual void Render() = 0;
-			virtual void Init() {}
-		};
-
-		enum class Renderlib : int {
-			Sdl2,
-			SFML,
-		};
-
-		class RenderSystemFactory {
-		public:
-			std::unique_ptr<RenderSystem> MakeSystem(const Renderlib renderlib)  const;
-		};
-	}
+namespace ecs::system {
+	class RenderFactory {
+		static std::shared_ptr<RenderWindow> CreateRenderWindow(std::shared_ptr<ecs::core::EntityComponentSystem> ecs);
+	};
 }

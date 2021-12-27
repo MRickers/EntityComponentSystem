@@ -20,15 +20,13 @@ endif()
 
 add_compile_options(${COMPILE_OPTIONS})
 
-add_library(ecslib SHARED src/ecs/core/entity_manager.cpp src/ecs/utils/timer.cpp)
-target_include_directories(ecslib PRIVATE ${PROJECT_SOURCE_DIR}/include)
-install(TARGETS ecslib DESTINATION bin)
-
 option(BACKEND_SFML_64 "" ON)
 
 if(BACKEND_SFML_64)
-message(STATUS "building with backend SFML-2.5.1-64bit")
+message(STATUS "Building with backend SFML-2.5.1-64bit")
 add_compile_definitions(BACKEND_SFML)
+
+set(BACKEND_SOURCES src/ecs/systems/render_sfml.cpp)
 
 add_library(audio SHARED IMPORTED)
 set_property(TARGET audio PROPERTY
@@ -59,11 +57,32 @@ set_property(TARGET window PROPERTY
              IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1-64bit/SFML-2.5.1/bin/sfml-window-2.dll)
 set_property(TARGET window PROPERTY
              IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1-64bit/SFML-2.5.1/lib/sfml-window.lib)
+
+set(BACKEND_INCLUDE ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1-64bit/SFML-2.5.1/include)
 endif()
 
-
-
 add_subdirectory(Vector)
+
+
+# ecslib
+add_library(ecslib SHARED 
+src/ecs/core/entity_manager.cpp 
+src/ecs/utils/timer.cpp
+src/ecs/systems/render_system.cpp
+${BACKEND_SOURCES}
+)
+target_include_directories(
+ecslib PRIVATE 
+${PROJECT_SOURCE_DIR}/include
+${BACKEND_INCLUDE})
+target_link_libraries(ecslib vector audio graphics system window network)
+install(TARGETS ecslib DESTINATION bin)
+
+add_custom_command(TARGET ecslib POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:ecslib> $<TARGET_FILE_DIR:ecslib>
+COMMAND_EXPAND_LISTS
+)
+
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 add_subdirectory(googletest)
