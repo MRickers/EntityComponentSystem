@@ -5,6 +5,10 @@
 
 namespace ecs::system {
 	class RenderFactory {
-		static std::shared_ptr<RenderWindow> CreateRenderWindow(std::shared_ptr<ecs::core::EntityComponentSystem> ecs);
+	public:
+		static std::shared_ptr<RenderWindow> CreateRenderWindow(
+			std::shared_ptr<ecs::core::EntityComponentSystem> ecs,
+			const vector::Vector2D& size,
+			const std::string& window_name);
 	};
 }

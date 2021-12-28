@@ -25,40 +25,7 @@ option(BACKEND_SFML_64 "" ON)
 if(BACKEND_SFML_64)
 message(STATUS "Building with backend SFML-2.5.1-64bit")
 add_compile_definitions(BACKEND_SFML)
-
-set(BACKEND_SOURCES src/ecs/systems/render_sfml.cpp)
-
-add_library(audio SHARED IMPORTED)
-set_property(TARGET audio PROPERTY
-             IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1-64bit/SFML-2.5.1/bin/sfml-audio-2.dll)
-set_property(TARGET audio PROPERTY
-             IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1-64bit/SFML-2.5.1/lib/sfml-audio.lib)
-
-add_library(graphics SHARED IMPORTED)
-set_property(TARGET graphics PROPERTY
-             IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1-64bit/SFML-2.5.1/bin/sfml-graphics-2.dll)
-set_property(TARGET graphics PROPERTY
-             IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1-64bit/SFML-2.5.1/lib/sfml-graphics.lib)
-
-add_library(network SHARED IMPORTED)
-set_property(TARGET network PROPERTY
-             IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1-64bit/SFML-2.5.1/bin/sfml-network-2.dll)
-set_property(TARGET network PROPERTY
-             IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1-64bit/SFML-2.5.1/lib/sfml-network.lib)
-
-add_library(system SHARED IMPORTED)
-set_property(TARGET system PROPERTY
-             IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1-64bit/SFML-2.5.1/bin/sfml-system-2.dll)
-set_property(TARGET system PROPERTY
-             IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1-64bit/SFML-2.5.1/lib/sfml-system.lib)
-
-add_library(window SHARED IMPORTED)
-set_property(TARGET window PROPERTY
-             IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1-64bit/SFML-2.5.1/bin/sfml-window-2.dll)
-set_property(TARGET window PROPERTY
-             IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1-64bit/SFML-2.5.1/lib/sfml-window.lib)
-
-set(BACKEND_INCLUDE ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1-64bit/SFML-2.5.1/include)
+include("backend_sfml.cmake")
 endif()
 
 add_subdirectory(Vector)
@@ -77,12 +44,6 @@ ${PROJECT_SOURCE_DIR}/include
 ${BACKEND_INCLUDE})
 target_link_libraries(ecslib vector audio graphics system window network)
 install(TARGETS ecslib DESTINATION bin)
-
-add_custom_command(TARGET ecslib POST_BUILD
-COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:ecslib> $<TARGET_FILE_DIR:ecslib>
-COMMAND_EXPAND_LISTS
-)
-
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 add_subdirectory(googletest)

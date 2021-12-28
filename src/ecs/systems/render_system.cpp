@@ -8,9 +8,12 @@ throw "backend not implemented"
 
 namespace ecs::system {
 
-	std::shared_ptr<RenderWindow> RenderFactory::CreateRenderWindow(std::shared_ptr<ecs::core::EntityComponentSystem> ecs) {
+	std::shared_ptr<RenderWindow> RenderFactory::CreateRenderWindow(
+		std::shared_ptr<ecs::core::EntityComponentSystem> ecs,
+		const vector::Vector2D& size,
+		const std::string& window_name) {
 #if BACKEND_SFML
-		return std::make_shared<SFMLWindow>(ecs);
+		return std::make_shared<ecs::system::SFMLWindow>(ecs, size, window_name);
 #else
 		throw "backend not implemented";
 #endif
