@@ -330,6 +330,15 @@ TEST(SystemManagerTest, RegisterSystem) {
 	ASSERT_NO_THROW(systems.RegisterSystem<TestSystem>());
 }
 
+TEST(SystemManagerTest, RegisterSystemPointer) {
+	struct TestSystem : public ecs::core::System {};
+
+	ecs::core::SystemManager systems;
+	const auto system = std::make_shared<TestSystem>();
+
+	ASSERT_NO_THROW(systems.RegisterSystem<TestSystem>(system));
+}
+
 TEST(SystemManagerTest, RegisterSystemDouble) {
 	struct TestSystem : public ecs::core::System {};
 
@@ -352,7 +361,7 @@ TEST(SystemManagerTest, SetSignatureDouble) {
 	ecs::core::SystemManager systems;
 	ASSERT_NO_THROW(systems.RegisterSystem<TestSystem>());
 	ASSERT_NO_THROW(systems.SetSignature<TestSystem>(ecs::core::Signature{ "001" }));
-	ASSERT_THROW(systems.SetSignature<TestSystem>(ecs::core::Signature("010")), ecs::core::Exception);
+	ASSERT_NO_THROW(systems.SetSignature<TestSystem>(ecs::core::Signature("010")));
 }
 
 TEST(SystemManagerTest, SetEntitySignature) {
@@ -392,6 +401,18 @@ TEST(EntityComponentSystem, RegisterSystem) {
 	};
 	ecs::core::EntityComponentSystem ecs{};
 	ASSERT_NO_THROW(ecs.RegisterSystem<TestSystem>());
+}
+
+TEST(EntityComponentSystem, RegisterSystemPointer) {
+	struct TestSystem : public ecs::core::System {
+		void callback() {
+
+		}
+	};
+	ecs::core::EntityComponentSystem ecs{};
+	const auto system = std::make_shared<TestSystem>();
+
+	ASSERT_NO_THROW(ecs.RegisterSystem<TestSystem>(system));
 }
 
 TEST(EntityComponentSystem, CreateEntity) {
@@ -465,11 +486,14 @@ TEST(EntityComponentSystem, Full) {
 	};
 
 	ecs::core::EntityComponentSystem ecs{};
-	ecs.RegisterComponent<TestComponent>();
+	ASSERT_NO_THROW(ecs.RegisterComponent<TestComponent>());
 	const auto test_system = ecs.RegisterSystem<TestSystem>();
 	const auto entity = ecs.CreateEntity();
 	ASSERT_NO_THROW(ecs.AddComponent<TestComponent>(entity, TestComponent{}));
-	//const auto& test_component = ecs.GetComponent<TestComponent>(entity);
+	ASSERT_NO_THROW(ecs.GetComponent<TestComponent>(entity));
+	ASSERT_EQ(0, ecs.GetComponentType<TestComponent>());
+	ASSERT_NO_THROW(ecs.SetSystemSignature<TestSystem>(ecs::core::Signature{ "001" }));
+	ASSERT_NO_THROW(ecs.DestroyEntity(entity));
 }
 
 TEST(Logging, ConsoleLogTest) {

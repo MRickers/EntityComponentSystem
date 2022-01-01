@@ -18,4 +18,14 @@ namespace ecs::system {
 		throw "backend not implemented";
 #endif
 	}
+
+	std::shared_ptr<RenderSystem> RenderFactory::CreateRenderSystem(
+		std::shared_ptr<ecs::core::EntityComponentSystem> ecs
+	) {
+#if BACKEND_SFML
+		return std::make_shared<ecs::system::SFMLRenderSystem>(ecs);
+#else
+
+#endif
+	}
 }

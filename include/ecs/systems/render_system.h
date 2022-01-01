@@ -10,5 +10,7 @@ namespace ecs::system {
 			std::shared_ptr<ecs::core::EntityComponentSystem> ecs,
 			const vector::Vector2D& size,
 			const std::string& window_name);
+
+		static std::shared_ptr<RenderSystem>CreateRenderSystem(std::shared_ptr<ecs::core::EntityComponentSystem> ecs);
 	};
 }

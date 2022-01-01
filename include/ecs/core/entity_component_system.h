@@ -71,6 +71,12 @@ namespace ecs {
 
 			// System Methods
 			template<typename T>
+			void RegisterSystem(std::shared_ptr<ecs::core::System> system) {
+				system_manager_->RegisterSystem<T>(system);
+				system_manager_->SetSignature<T>(ecs::core::Signature{});
+			}
+
+			template<typename T>
 			std::shared_ptr<T> RegisterSystem() {
 				auto system = system_manager_->RegisterSystem<T>();
 				system_manager_->SetSignature<T>(ecs::core::Signature{});
@@ -79,7 +85,7 @@ namespace ecs {
 
 			template<typename T>
 			void SetSystemSignature(const Signature signature) {
-				system_manager_->SetSignature(signature);
+				system_manager_->SetSignature<T>(signature);
 			}
 		};
 	}

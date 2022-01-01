@@ -8,21 +8,6 @@
 
 namespace ecs::system {
 
-	class Dummy : public RenderWindow {
-	private:
-		sf::RenderWindow window_;
-		std::shared_ptr<ecs::core::EntityComponentSystem> ecs_;
-	public:
-		Dummy(
-			std::shared_ptr<ecs::core::EntityComponentSystem> ecs,
-			const vector::Vector2D& size = vector::Vector2D{ 780,620 },
-			const std::string& window_name = "Game Window");
-
-		virtual void Update() override;
-		virtual void ProcessEvents() override;
-		virtual void Draw(ecs::core::Entity entity) override;
-	};
-
 	class SFMLWindow : public RenderWindow {
 	private:
 		sf::RenderWindow window_;
@@ -38,5 +23,16 @@ namespace ecs::system {
 		virtual void Draw(ecs::core::Entity entity) override;
 	};
 
+	class SFMLRenderSystem : public ecs::system::RenderSystem {
+	private:
+		ecs::core::Entity camera_;
+		std::shared_ptr<ecs::core::EntityComponentSystem> ecs_;
+	public:
+		SFMLRenderSystem(std::shared_ptr<ecs::core::EntityComponentSystem> ecs);
+
+		virtual void Update(uint32_t dt) override;
+		virtual void Render() override;
+		virtual void Init() override;
+	};
 
 }

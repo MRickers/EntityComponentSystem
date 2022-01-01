@@ -11,6 +11,7 @@ namespace ecs {
 
 		class System {
 		public:
+			virtual ~System() {}
 			std::set<Entity> entities_;
 		};
 
@@ -19,6 +20,21 @@ namespace ecs {
 			std::unordered_map<std::string, Signature> signatures_;
 			std::unordered_map<std::string, std::shared_ptr<System>> systems_;
 		public:
+			template<typename T>
+			void RegisterSystem(std::shared_ptr<System> system) {
+				const auto type_name = typeid(T).name();
+
+				if (systems_.insert({ type_name, system }).second == false) {
+					throw Exception(
+						std::string("System already exist").c_str(),
+						__FILE__,
+						__LINE__,
+						static_cast<int>(ERROR::SYSTEM_ALREADY_REGISTERED),
+						""
+					);
+				}
+			}
+
 			template<typename T>
 			std::shared_ptr<T> RegisterSystem() {
 				const auto type_name = typeid(T).name();
@@ -52,15 +68,7 @@ namespace ecs {
 			void SetSignature(Signature signature) {
 				const auto type_name = typeid(T).name();
 
-				if(signatures_.insert({ type_name, signature }).second == false) {
-					throw Exception(
-						std::string("Signature already exist").c_str(),
-						__FILE__,
-						__LINE__,
-						static_cast<int>(ERROR::SYSTEM_SIGNATURE_ALREADY_REGISTERED),
-						""
-					);
-				}
+				signatures_.insert_or_assign(type_name, signature);
 			}
 
 			void SetEntitySignature(const Entity entity, const Signature entity_signature) {
