@@ -6,6 +6,7 @@
 #include "ecs/core/entity_component_system.h"
 #include "logging/logging.h"
 #include "ecs/event/event.h"
+#include "ecs/utils/timer.h"
 
 TEST(EntityManagerTest, CreateEntityTest) {
 	ecs::core::EntityManager entity_manager(5);
@@ -374,8 +375,101 @@ TEST(SystemManagerTest, DestroyEntity) {
 	ASSERT_NO_THROW(systems.DestroyEntity(0));
 }
 
-TEST(EntityComponentSystem, Create) {
-	ecs::core::EntityComponentSystem ECS;
+TEST(EntityComponentSystem, RegisterComponent) {
+	struct Transform {
+		int x;
+		int y;
+	};
+	ecs::core::EntityComponentSystem ecs{};
+	ASSERT_NO_THROW(ecs.RegisterComponent<Transform>());
+}
+
+TEST(EntityComponentSystem, RegisterSystem) {
+	struct TestSystem : public ecs::core::System {
+		void callback() {
+
+		}
+	};
+	ecs::core::EntityComponentSystem ecs{};
+	ASSERT_NO_THROW(ecs.RegisterSystem<TestSystem>());
+}
+
+TEST(EntityComponentSystem, CreateEntity) {
+	ecs::core::EntityComponentSystem ecs{};
+	
+	ASSERT_NO_THROW(ecs.CreateEntity());
+}
+
+TEST(EntityComponentSystem, DestroyEntity) {
+	ecs::core::EntityComponentSystem ecs{};
+
+	auto entity = ecs.CreateEntity();
+	ASSERT_NO_THROW(ecs.DestroyEntity(entity));
+}
+
+TEST(EntityComponentSystem, AddComponentNotRegistered) {
+	struct TestComponent {
+		uint32_t t;
+	};
+
+	ecs::core::EntityComponentSystem ecs{};
+	const auto entity = ecs.CreateEntity();
+	ASSERT_THROW(ecs.AddComponent<TestComponent>(entity, TestComponent{}), ecs::core::Exception);
+}
+
+
+TEST(EntityComponentSystem, AddComponent) {
+	struct TestComponent {
+		uint32_t t;
+	};
+
+	ecs::core::EntityComponentSystem ecs{};
+	const auto entity = ecs.CreateEntity();
+	ecs.RegisterComponent<TestComponent>();
+	ASSERT_NO_THROW(ecs.AddComponent<TestComponent>(entity, TestComponent{}));
+}
+
+TEST(EntityComponentSystem, RemoveComponent) {
+	struct TestComponent {
+		uint32_t t;
+	};
+
+	ecs::core::EntityComponentSystem ecs{};
+	const auto entity = ecs.CreateEntity();
+	ecs.RegisterComponent<TestComponent>();
+	ASSERT_NO_THROW(ecs.AddComponent<TestComponent>(entity, TestComponent{}));
+	ASSERT_NO_THROW(ecs.RemoveComponent<TestComponent>(entity));
+	ASSERT_THROW(ecs.GetComponent<TestComponent>(entity), ecs::core::Exception);
+}
+
+TEST(EntityComponentSystem, AddComponentNoSystem) {
+	struct TestComponent {
+		uint32_t t;
+	};
+
+	ecs::core::EntityComponentSystem ecs{};
+	const auto entity = ecs.CreateEntity();
+	ecs.RegisterComponent<TestComponent>();
+	ASSERT_NO_THROW(ecs.AddComponent<TestComponent>(entity, TestComponent{}));
+}
+
+TEST(EntityComponentSystem, Full) {
+	struct TestComponent {
+		uint32_t t;
+	};
+
+	struct TestSystem : public ecs::core::System {
+		void recall(ecs::core::Entity) {
+			 
+		}
+	};
+
+	ecs::core::EntityComponentSystem ecs{};
+	ecs.RegisterComponent<TestComponent>();
+	const auto test_system = ecs.RegisterSystem<TestSystem>();
+	const auto entity = ecs.CreateEntity();
+	ASSERT_NO_THROW(ecs.AddComponent<TestComponent>(entity, TestComponent{}));
+	//const auto& test_component = ecs.GetComponent<TestComponent>(entity);
 }
 
 TEST(Logging, ConsoleLogTest) {
@@ -411,7 +505,6 @@ TEST(EventHandler, Subscribe) {
 	ASSERT_EQ(data.x_, 2);
 	ASSERT_EQ(data.y_, 2);
 }
-
 
 int main(int argc, char* argv[]) {
 	testing::InitGoogleTest(&argc, argv);

@@ -10,9 +10,9 @@ namespace ecs {
 		class ComponentManager {
 		private:
 
-			std::unordered_map<std::string, std::shared_ptr<IComponentArray>> components_{};
-			std::unordered_map<std::string, ComponentType> component_types_{};
-			ComponentType component_type_counter{};
+			std::unordered_map<std::string, std::shared_ptr<IComponentArray>> components_;
+			std::unordered_map<std::string, ComponentType> component_types_;
+			ComponentType component_type_counter;
 
 			template<typename T>
 			std::shared_ptr<ComponentArray<T>> getComponent() {
@@ -32,6 +32,7 @@ namespace ecs {
 				}
 			}
 		public:
+			ComponentManager() : components_(), component_types_(), component_type_counter() {}
 		
 			template<typename T>
 			void RegisterComponent() {

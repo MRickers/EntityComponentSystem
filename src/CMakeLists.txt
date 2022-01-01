@@ -22,7 +22,11 @@ if(BUILD_EXAMPLES)
 		${CMAKE_SOURCE_DIR}/include
 	)
 	target_link_libraries(timer_example ecslib Threads::Threads)
-	install(TARGETS timer_example DESTINATION bin)
+	install(TARGETS timer_example DESTINATION $<TARGET_FILE_DIR:timer_example>)
+	
+	add_custom_command(TARGET timer_example POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:timer_example> $<TARGET_FILE_DIR:timer_example>
+	COMMAND_EXPAND_LISTS)
 
 	message(STATUS "Building cube example")
 	add_executable(cube_example examples/cube_example.cpp)

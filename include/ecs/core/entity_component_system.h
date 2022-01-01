@@ -14,8 +14,8 @@ namespace ecs {
 
 		public:
 			EntityComponentSystem(
-				std::shared_ptr<EntityManager> entity_manager = std::shared_ptr<EntityManager>(),
-				std::shared_ptr<ComponentManager> component_manager = std::shared_ptr<ComponentManager>(),
+				std::shared_ptr<EntityManager> entity_manager = std::make_shared<EntityManager>(),
+				std::shared_ptr<ComponentManager> component_manager = std::make_shared<ComponentManager>(),
 				std::shared_ptr<SystemManager> system_manager = std::make_shared<SystemManager>()) :
 				entity_manager_(entity_manager),
 				component_manager_(component_manager),
@@ -51,7 +51,7 @@ namespace ecs {
 
 			template<typename T>
 			void RemoveComponent(const Entity entity) {
-				component_manager_->Remove(entity);
+				component_manager_->RemoveComponent<T>(entity);
 
 				Signature signature = entity_manager_->GetSignature(entity);
 				signature.set(component_manager_->GetComponentType<T>(), false);
@@ -72,7 +72,9 @@ namespace ecs {
 			// System Methods
 			template<typename T>
 			std::shared_ptr<T> RegisterSystem() {
-				return system_manager_->RegisterSystem<T>();
+				auto system = system_manager_->RegisterSystem<T>();
+				system_manager_->SetSignature<T>(ecs::core::Signature{});
+				return system;
 			}
 
 			template<typename T>
