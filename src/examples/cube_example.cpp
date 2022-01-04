@@ -1,4 +1,5 @@
 #include <vector>
+#include <random>
 #include <logging/logging.h>
 #include <ecs/systems/render_system.h>
 #include <ecs/core/entity_component_system.h>
@@ -37,17 +38,26 @@ int main() {
 
 	render_system->Init();
 
-	std::vector<ecs::core::Entity> entities(1);
+	std::vector<ecs::core::Entity> entities(10);
+
+	std::random_device rd;
+	std::mt19937 generator(rd());
+
+	std::uniform_real_distribution<float> random_pos(0.0f, 500.0f);
+	std::uniform_real_distribution<float> random_color(0, 255);
 
 	for (auto& entity : entities) {
 		entity = ecs->CreateEntity();
 		
 		ecs->AddComponent<ecs::component::Transform>(
 			entity,
-			ecs::component::Transform{ Vector{300, 300}, Vector{0,0}, Vector{0,0} });
+			ecs::component::Transform{ Vector{random_pos(generator), random_pos(generator)}, Vector{0,0}, Vector{0,0} });
 		ecs->AddComponent<ecs::component::Renderable>(
 			entity,
-			ecs::component::Renderable{ 128, 128, 128 }
+			ecs::component::Renderable{ 
+				(uint8_t)random_color(generator),
+				(uint8_t)random_color(generator),
+				(uint8_t)random_color(generator) }
 		);
 	}
 
@@ -71,6 +81,7 @@ int main() {
 
 				update_next += update_rate;
 			}
+			//lLog(lInfo) << "Render";
 			// Draw
 			render_system->Render();
 		}

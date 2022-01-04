@@ -41,12 +41,16 @@ namespace ecs::system {
 	void SFMLWindow::Draw(ecs::core::Entity entity) {
 		const auto& transform = ecs_->GetComponent<ecs::component::Transform>(entity);
 		const auto& color = ecs_->GetComponent<ecs::component::Renderable>(entity);
-		sf::RectangleShape rect{ sf::Vector2f{transform.position.GetX(), transform.position.GetY()} };
+		sf::Vector2f pos{ transform.position.GetX(), transform.position.GetY() };
+		sf::RectangleShape rect{ sf::Vector2f{ 20, 20 } };
+		rect.setFillColor(sf::Color{ color.red, color.green, color.blue });
+		rect.setPosition(sf::Vector2f{ pos });
+
 		window_.draw(rect);
 	}
 
 	void SFMLWindow::Clear() {
-		window_.clear();
+		window_.clear(sf::Color::Black);
 	}
 
 	void SFMLWindow::Display() {
