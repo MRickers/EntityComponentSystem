@@ -21,6 +21,8 @@ namespace ecs::system {
 		virtual void Update() override;
 		virtual void ProcessEvents() override;
 		virtual void Draw(ecs::core::Entity entity) override;
+		virtual void Clear() override;
+		virtual void Display() override;
 	};
 
 	class SFMLRenderSystem : public ecs::system::RenderSystem {
@@ -28,7 +30,9 @@ namespace ecs::system {
 		ecs::core::Entity camera_;
 		std::shared_ptr<ecs::core::EntityComponentSystem> ecs_;
 	public:
-		SFMLRenderSystem(std::shared_ptr<ecs::core::EntityComponentSystem> ecs);
+		SFMLRenderSystem(
+			std::shared_ptr<ecs::core::EntityComponentSystem> ecs,
+			std::shared_ptr<RenderWindow> render_window);
 
 		virtual void Update(uint32_t dt) override;
 		virtual void Render() override;

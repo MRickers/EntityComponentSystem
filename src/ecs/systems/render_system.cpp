@@ -20,10 +20,11 @@ namespace ecs::system {
 	}
 
 	std::shared_ptr<RenderSystem> RenderFactory::CreateRenderSystem(
-		std::shared_ptr<ecs::core::EntityComponentSystem> ecs
+		std::shared_ptr<ecs::core::EntityComponentSystem> ecs,
+		std::shared_ptr<RenderWindow> render_window
 	) {
 #if BACKEND_SFML
-		return std::make_shared<ecs::system::SFMLRenderSystem>(ecs);
+		return std::make_shared<ecs::system::SFMLRenderSystem>(ecs, render_window);
 #else
 
 #endif

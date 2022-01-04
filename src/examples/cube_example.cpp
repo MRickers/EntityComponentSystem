@@ -6,6 +6,7 @@
 #include <ecs/components/rigid_body.h>
 #include <ecs/components/renderable.h>
 #include <ecs/components/camera.h>
+#include <ecs/utils/timer.h>
 
 int main() {
 	lLog(lInfo) << "cube example";
@@ -15,7 +16,8 @@ int main() {
 		vector::Vector2D(800,600),
 		"Cube Example");
 	auto render_system = ecs::system::RenderFactory::CreateRenderSystem(
-		ecs
+		ecs,
+		render_window
 	);
 
 	// components
@@ -43,6 +45,38 @@ int main() {
 		ecs->AddComponent<ecs::component::Transform>(
 			entity,
 			ecs::component::Transform{ Vector{300, 300}, Vector{0,0}, Vector{0,0} });
+		ecs->AddComponent<ecs::component::Renderable>(
+			entity,
+			ecs::component::Renderable{ 128, 128, 128 }
+		);
+	}
+
+	ecs::utils::Timer update_clock;
+
+	const uint32_t update_rate = 1000 / 20; // 20Hz
+	uint32_t update_next = update_clock.GetTime();
+	uint8_t max_updates = 5;
+	try {
+
+		while (bool running = true) {
+			uint8_t updates = 0;
+		
+			// Process Events
+			render_window->ProcessEvents();
+
+			uint32_t update_time = update_clock.GetTime();
+
+			while ((update_time - update_next) >= update_rate && updates++ < max_updates) {
+				render_system->Update(update_rate);
+
+				update_next += update_rate;
+			}
+			// Draw
+			render_system->Render();
+		}
+	}
+	catch (const ecs::core::Exception& e) {
+		lLog(lError) << e.what();
 	}
 
 	return 0;
