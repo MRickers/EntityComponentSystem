@@ -70,6 +70,7 @@ namespace ecs {
 			}
 
 			// System Methods
+
 			template<typename T>
 			void RegisterSystem(std::shared_ptr<ecs::core::System> system) {
 				system_manager_->RegisterSystem<T>(system);

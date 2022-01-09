@@ -36,6 +36,7 @@ add_library(ecslib SHARED
 src/ecs/core/entity_manager.cpp 
 src/ecs/utils/timer.cpp
 src/ecs/systems/render_system.cpp
+src/ecs/systems/physics_system.cpp
 ${BACKEND_SOURCES}
 )
 target_include_directories(

@@ -8,7 +8,7 @@
 namespace ecs {
 	namespace core {
 
-		inline const std::uint16_t MAX_ENTITIES = 512;
+		inline const std::uint16_t MAX_ENTITIES = 0x1000;
 		inline const std::uint16_t MAX_COMPONENTS = 32;
 
 		using Entity = std::uint16_t;
