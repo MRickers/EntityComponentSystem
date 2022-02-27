@@ -4,7 +4,9 @@
 #include <memory>
 #include <optional>
 #include <filesystem>
-#include <ifstream>
+namespace fs = std::filesystem;
+
+#include <fstream>
 #include <ecs/core/ecs_exception.h>
 #include <logging/logging.h>
 
@@ -14,7 +16,6 @@ namespace ecs::util {
 		using ResourcePtr = std::shared_ptr<T>;
 		using ResourceContainer = std::unordered_map<std::string, ResourcePtr>;
 		using Paths = std::unordered_map<std::string, std::string>;
-		using namespace fs = std::filesystem;
 	private:
 		ResourceContainer resources_;
 		Paths paths_;
@@ -41,16 +42,16 @@ namespace ecs::util {
 				}
 				paths.close();
 
-				if (ifs.fail() && !ifs.eof()) {
+				if (paths.fail() && !paths.eof()) {
 					const auto msg = "Logical i/o error on " + path.string();
-					const int16_t syserr = errno;
-					throw ecs::core::Exception{ msg, syserr };
+					const int syserr = errno;
+					throw ecs::core::Exception{ msg.c_str(), syserr };
 				}
 
-				if (ifs.bad()) {
+				if (paths.bad()) {
 					const auto msg = "Read or write i/o error on " + path.string();
-					const int16_t syserr = errno;
-					throw ecs::core::Exception{ msg, syserr };
+					const int syserr = errno;
+					throw ecs::core::Exception{ msg.c_str(), syserr };
 				}
 
 			}
@@ -60,7 +61,12 @@ namespace ecs::util {
 	public:
 		virtual ~ResourceManager() {}
 		ResourceManager(const std::string& paths_file) {
-			loadPaths(paths_file);
+			try {
+				loadPaths(paths_file);
+			}
+			catch (const ecs::core::Exception& e) {
+				lLog(lWarn) << e.what();
+			}
 		}
 
 		ResourcePtr GetResource(const std::string& id) const {
@@ -98,7 +104,7 @@ namespace ecs::util {
 			throw ecs::core::Exception{ msg, -2 };
 		}
 
-		std::optional<ResourcePtr> Load(const std::string& path) const {
+		std::optional<ResourcePtr> Load(const std::string& path) {
 			return static_cast<Derived*>(this)->Load(path);
 		}
 

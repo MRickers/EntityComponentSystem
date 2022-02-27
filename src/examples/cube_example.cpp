@@ -105,8 +105,6 @@ int main() {
 				render_system->Update(update_rate);
 				update_next += update_rate;
 			}
-			//lLog(lInfo) << "Render";
-			// Draw
 			render_system->Render();
 		}
 	}

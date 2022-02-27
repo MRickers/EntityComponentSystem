@@ -12,8 +12,6 @@ namespace ecs {
 			} catch(const std::out_of_range& e) {
 				throw Exception(
 						e.what(),
-						__FILE__,
-						__LINE__,
 						static_cast<int>(ERROR::COMPONENT_MAX_COUNT),
 						""
 					);
@@ -38,8 +36,6 @@ namespace ecs {
 			} catch(const std::out_of_range& e) {
 				throw Exception(
 					e.what(),
-					__FILE__,
-					__LINE__,
 					static_cast<int>(ERROR::COMPONENT_INDEX_ERROR),
 					""
 				);
@@ -55,8 +51,6 @@ namespace ecs {
 			} catch(const std::out_of_range& e) {
 				throw Exception(
 					e.what(),
-					__FILE__,
-					__LINE__,
 					static_cast<int>(ERROR::COMPONENT_INDEX_ERROR),
 					""
 				);

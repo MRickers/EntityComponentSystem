@@ -45,5 +45,6 @@ set_target_properties(window PROPERTIES
   IMPORTED_CONFIGURATIONS "RELEASE;DEBUG"
 )
 
-set(BACKEND_SOURCES src/ecs/systems/render_sfml.cpp)
+set(BACKEND_SOURCES 
+src/ecs/systems/render_sfml.cpp)
 set(BACKEND_INCLUDE ${CMAKE_SOURCE_DIR}/backend/SFML-2.5.1-64bit/SFML-2.5.1/include)

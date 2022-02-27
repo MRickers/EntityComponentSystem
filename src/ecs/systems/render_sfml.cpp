@@ -30,8 +30,6 @@ namespace ecs::system {
 		else {
 			throw ecs::core::Exception{
 				"Window close event",
-				__FILE__,
-				__LINE__,
 				0,
 				""
 			};

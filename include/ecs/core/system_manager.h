@@ -27,8 +27,6 @@ namespace ecs {
 				if (systems_.insert({ type_name, system }).second == false) {
 					throw Exception(
 						std::string("System already exist").c_str(),
-						__FILE__,
-						__LINE__,
 						static_cast<int>(ERROR::SYSTEM_ALREADY_REGISTERED),
 						""
 					);
@@ -45,8 +43,6 @@ namespace ecs {
 					if (systems_.insert({ type_name, system }).second == false) {
 						throw Exception(
 							std::string("System already exist").c_str(),
-							__FILE__,
-							__LINE__,
 							static_cast<int>(ERROR::SYSTEM_ALREADY_REGISTERED),
 							""
 						);
@@ -56,8 +52,6 @@ namespace ecs {
 				catch (const std::bad_alloc& e) {
 					throw Exception(
 						e.what(),
-						__FILE__,
-						__LINE__,
 						static_cast<int>(ERROR::SYSTEM_OUT_OF_MEMORY),
 						""
 					);
@@ -89,8 +83,6 @@ namespace ecs {
 				catch (const std::out_of_range& e) {
 					throw Exception(
 						e.what(),
-						__FILE__,
-						__LINE__,
 						static_cast<int>(ERROR::SYSTEM_SIGNATURE_NOT_FOUND),
 						""
 					);

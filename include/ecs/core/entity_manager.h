@@ -25,8 +25,8 @@ namespace ecs {
 			// total entities
 			uint32_t entity_count_;
 		
-			void checkEntityRange(const Entity entity, int line) const;
-			void checkEntityExists(const Entity entity, int line) const;
+			void checkEntityRange(const Entity entity) const;
+			void checkEntityExists(const Entity entity) const;
 		public:
 			EntityManager(uint16_t max_entity_count = MAX_ENTITIES);
 			EntityManager(const EntityManager&) = delete;

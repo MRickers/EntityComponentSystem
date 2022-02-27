@@ -24,8 +24,6 @@ namespace ecs {
 				catch (const std::out_of_range& e) {
 					throw Exception(
 						e.what(),
-						__FILE__,
-						__LINE__,
 						static_cast<int>(ERROR::COMPONENT_TYPE_NOT_FOUND),
 						""
 					);
@@ -41,8 +39,6 @@ namespace ecs {
 				if (component_types_.find(type_name) != component_types_.end()) {
 					throw Exception(
 						"ComponentType already registered",
-						__FILE__,
-						__LINE__,
 						static_cast<int>(ERROR::COMPONENT_TYPE_ALREADY_REGISTERED),
 						""
 					);
@@ -63,8 +59,6 @@ namespace ecs {
 				catch (const std::out_of_range& e) {
 					throw Exception(
 						e.what(),
-						__FILE__,
-						__LINE__,
 						static_cast<int>(ERROR::COMPONENT_TYPE_ALREADY_REGISTERED),
 						""
 					);

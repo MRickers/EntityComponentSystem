@@ -7,6 +7,7 @@
 #include "logging/logging.h"
 #include "ecs/event/event.h"
 #include "ecs/utils/timer.h"
+#include "ecs/utils/texture_manager.h"
 
 TEST(EntityManagerTest, CreateEntityTest) {
 	ecs::core::EntityManager entity_manager(5);
